@@ -21,8 +21,8 @@ onMounted(() => {
 });
 
 const form = useForm({
-    email: ref('super@root.com'),
-    password: ref('password'),
+    email: null,
+    password: null,
     remember: false,
 });
 
