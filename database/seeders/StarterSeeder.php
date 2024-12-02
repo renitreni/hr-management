@@ -13,12 +13,15 @@ use App\Models\Manager;
 use App\Models\Position;
 use App\Models\Shift;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class StarterSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * 
+     * php artisan db:seed --class=StarterSeeder
      */
     public function run(): void
     {
@@ -53,7 +56,7 @@ class StarterSeeder extends Seeder
             'phone' => '01001095076',
             'national_id' => '29904268801154',
             'hired_on' => '2023-01-25',
-            'password' => '$2y$10$7BMn8WlpLkUB64fCCCVCvuFbqp4dO34dLL/a7MjMdoITz0FOIOZ.G',
+            'password' => Hash::make('MyPassword2024'),
             'branch_id' => 1,
             'department_id' => 1,
         ]);
