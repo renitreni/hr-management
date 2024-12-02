@@ -29,6 +29,7 @@ class StarterSeeder extends Seeder
             'organization_name' => 'Global Solutions Inc.',
             'organization_address' => '123 Main Street, Anytown, USA',
             'absence_limit' => 30,
+            'weekend_off_days' => json_encode(['friday', 'saturday']),
             'email' => 'info@globalsolutions.com',
         ]);
 
