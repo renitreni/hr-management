@@ -43,7 +43,7 @@
 - IP-based System assumes your organization has a static IP(s). If you have a dynamic IP(s), you'll need to update the IP(s) in the database every time it changes.
 - The system extracts personal information such as gender and age from the national ID, and the current supported ID is for Egyptian IDs. You need to implement your own ID parser to support your country or remove the method altogether. The method is located in `resources/js/Composables/useExtractPersonalDetails.js`.
 - normalized_name is a column in the database that is used to improve search experience for Arabic names and other languages that uses Arabic alphabets. it's only used for Arabic names but does not affect other languages, and you can utilize it in your own language. If you are using a different language, and it's bothering you, you can follow these steps to remove it:
-- 1. in `app/Services/EmployeeServices.php`, replace line `->where('normalized_name', 'ILIKE', '%' . $term . '%')` with `->where('name', 'ILIKE', '%' . $term . '%')` in `renderIndexPage` and `renderFindPage`. repeat the same for Departments and Branches `renderShowPage` methods.
+- 1. in `app/Services/EmployeeServices.php`, replace line `->where('normalized_name', 'LIKE', '%' . $term . '%')` with `->where('name', 'LIKE', '%' . $term . '%')` in `renderIndexPage` and `renderFindPage`. repeat the same for Departments and Branches `renderShowPage` methods.
 - 2. in `app/Models/Employee`, remove the entire `public static function boot()` since it's only used for normalization.
 - 3. in `employees` migration table, remove the `normalized_name` column, then run the migrations again. NOTE: this will delete all employees' data, it's better to do this before you start adding employees.
 
