@@ -13,14 +13,14 @@ class GlobalsController extends Controller
     public function index()
     {
         return Inertia::render('Globals/Globals', [
-            'globals' => Globals::first()
+            'globals' => Globals::first(),
         ]);
     }
 
     public function edit()
     {
         return Inertia::render('Globals/GlobalsEdit', [
-            'globals' => Globals::first()
+            'globals' => Globals::first(),
         ]);
     }
 

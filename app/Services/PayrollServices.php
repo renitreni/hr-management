@@ -2,17 +2,14 @@
 
 namespace App\Services;
 
-
 use App\Mail\PayrollEmail;
 use App\Models\Globals;
 use App\Models\Payroll;
-use Arr;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class PayrollServices
 {
-
     private function quickPay($payroll, $res)
     {
         $payroll->additions->update([
@@ -32,8 +29,10 @@ class PayrollServices
         if ($res['quick_pay_send_email']) {
             Mail::to($payroll->employee->email)->queue(new PayrollEmail($payroll));
         }
+
         return to_route('payrolls.show', ['payroll' => $payroll]);
     }
+
     public function updatePayroll($res, $id)
     {
         $payroll = Payroll::findOrFail($id);
@@ -96,16 +95,16 @@ class PayrollServices
 
         return to_route('payrolls.show', ['payroll' => $payroll]);
 
-
     }
 
-    public function updatePayrollStatus($request, $id){
+    public function updatePayrollStatus($request, $id)
+    {
         $request->validate([
             'status' => 'required|boolean',
-            'sendEmail' => 'nullable|integer|in:0,1'
+            'sendEmail' => 'nullable|integer|in:0,1',
         ]);
         $payroll = Payroll::findOrFail($id);
-        if (!$payroll->is_reviewed) {
+        if (! $payroll->is_reviewed) {
             return response()->json(['Error' => 'Payroll must be reviewed before it can be paid.']);
         }
         $payroll->update([

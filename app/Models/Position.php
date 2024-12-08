@@ -9,6 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Position extends Model
 {
     use LogsActivity;
+
     protected $fillable = ['name', 'description'];
 
     public function getActivitylogOptions(): LogOptions

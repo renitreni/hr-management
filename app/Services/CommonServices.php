@@ -3,13 +3,11 @@
 namespace App\Services;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Attendance;
 use App\Models\Calendar;
 use App\Models\Globals;
 use App\Models\Manager;
 use Carbon\Carbon;
-use Session;
 
 // You should rename "Verifiers" to "Validate"
 class CommonServices extends Controller
@@ -39,7 +37,6 @@ class CommonServices extends Controller
             ]);
     }
 
-
     public function removeManager(int $thing_id, bool $thing_type): void
     {
         // thing_type: 0 for branch, 1 for department
@@ -47,7 +44,7 @@ class CommonServices extends Controller
             'branch_id' => $thing_type ? null : $thing_id,
             'department_id' => $thing_type ? $thing_id : null,
         ]);
-        if ($manager->exists()){
+        if ($manager->exists()) {
             $manager->first()->delete();
         }
     }
@@ -55,14 +52,14 @@ class CommonServices extends Controller
     //  $monthDates = [startMonth, startDay, endMonth, endDay]
     public function calcOffDays($weekendOffDays, $hireDate, $monthDates = [0, 1, 1, 0, 12, 31]): int|float|array
     {
-        $mode = "custom";
+        $mode = 'custom';
         $weekendOffDays = array_map(function ($day) {
             return strtolower($day);
         }, $weekendOffDays);
 
         if ($monthDates[0] === 0 || $monthDates[3] === 0) {
             $monthDates[0] = $monthDates[3] = Carbon::now()->year;
-            $mode = "year";
+            $mode = 'year';
         }
 
         $hireData = Carbon::parse($hireDate);
@@ -90,18 +87,18 @@ class CommonServices extends Controller
             $startDate->addDay();
         }
 
-        if ($mode !== "year") {
+        if ($mode !== 'year') {
             return array_sum($dayCounts);
         }
 
         $total_days = $startDate2->diffInDays($endDate) + 1;
+
         return [
-            "offDays" => array_sum($dayCounts),
-            "total_year_days" => $total_days,
-            "total_weekend_days" => $total_days - array_sum($dayCounts),
+            'offDays' => array_sum($dayCounts),
+            'total_year_days' => $total_days,
+            'total_weekend_days' => $total_days - array_sum($dayCounts),
         ];
     }
-
 
     /********************************************************************
      * By default, this function will count holidays in the current year.
@@ -115,14 +112,14 @@ class CommonServices extends Controller
         if ($dates === null) {
             $dates = [
                 Carbon::now()->year, 1, 1,   // Start date default: January 1 of current year
-                Carbon::now()->year, 12, 31  // End date default: December 31 of current year
+                Carbon::now()->year, 12, 31,  // End date default: December 31 of current year
             ];
         }
 
         $startDate = Carbon::createFromDate($dates[0], $dates[1], $dates[2]);
         $endDate = Carbon::createFromDate($dates[3], $dates[4], $dates[5]);
 
-        $holidaysArray =  Calendar::where([
+        $holidaysArray = Calendar::where([
             ['type', 'holiday'],
             ['start_date', '>', $hireDate],
         ])->whereBetween('start_date', [$startDate, $endDate])
@@ -144,16 +141,19 @@ class CommonServices extends Controller
                 $totalDays += $daysDifference;
             }
         }
+
         return $totalDays;
     }
 
     // $dateArr: [month_year, month, month_start, month_year, month, month_start] - 2 repeated fields #month_year & month
     // Just want to avoid doing logic of modifying the array for calcOffDays() call.
-    public function getMonthStats($employee, $dateArr){
+    public function getMonthStats($employee, $dateArr)
+    {
         $globalSettings = Globals::first();
+
         return [
             'attendable_days' => $dateArr[5] - $this->calcOffDays(json_decode($globalSettings->weekend_off_days),
-                    $employee->hired_on, $dateArr),
+                $employee->hired_on, $dateArr),
             'attended' => Attendance::where('employee_id', $employee->id)
                 ->whereYear('date', $dateArr[0])
                 ->whereMonth('date', $dateArr[1])
@@ -173,7 +173,8 @@ class CommonServices extends Controller
     }
 
     // Expects date to be in YYYY-MM-DD format
-    public function isHoliday($date){
+    public function isHoliday($date)
+    {
         return Calendar::where('type', 'holiday')
             ->where(function ($query) use ($date) {
                 $query->where(function ($query) use ($date) {
@@ -193,6 +194,7 @@ class CommonServices extends Controller
     {
         $weekendDays = json_decode(Globals::first()->weekend_off_days);
         $today = Carbon::parse($date)->englishDayOfWeek; // Get the current day of the week in English
+
         return in_array(strtolower($today), array_map('strtolower', $weekendDays));
     }
 
@@ -201,10 +203,11 @@ class CommonServices extends Controller
     {
         return $this->isHoliday($date) || $this->isWeekend($date);
     }
+
     public function isTodayOff(): bool
     {
         $date = Carbon::now()->toDateString();
+
         return $this->isHoliday($date) || $this->isWeekend($date);
     }
-
 }

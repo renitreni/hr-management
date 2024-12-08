@@ -40,12 +40,11 @@ Route::group(['middleware' => ['role:admin', 'auth']], function () {
     Route::put('globals/edit', [\App\Http\Controllers\GlobalsController::class, 'update'])->name('globals.update');
 
     // Logs
-    Route::get('logs',[\App\Http\Controllers\LogsController::class, 'index'])->name('logs.index');
+    Route::get('logs', [\App\Http\Controllers\LogsController::class, 'index'])->name('logs.index');
 
     // Calendar
     Route::get('calendar', [\App\Http\Controllers\CalendarController::class, 'calendarIndex'])->name('calendar.index');
     Route::resource('calendars', \App\Http\Controllers\CalendarController::class);
-
 
 });
 
@@ -74,6 +73,7 @@ Route::redirect('/', '/dashboard')->middleware('auth');
 // Language Switching
 Route::get('language/{language}', function ($language) {
     Session()->put('locale', $language);
+
     return redirect()->back();
 })->name('language');
 

@@ -15,6 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Globals extends Model
 {
     use LogsActivity;
+
     protected $guarded = [];
 
     // Wasn't able to call this model 'Global' as it was reserved by PHP.
@@ -24,5 +25,4 @@ class Globals extends Model
     {
         return LogOptions::defaults();
     }
-
 }

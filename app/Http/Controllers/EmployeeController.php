@@ -18,7 +18,9 @@ use Inertia\Response;
 class EmployeeController extends Controller
 {
     protected EmployeeServices $employeeServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->employeeServices = new EmployeeServices;
@@ -41,11 +43,11 @@ class EmployeeController extends Controller
 
         return Inertia::render('Employee/Employees', [
             'employees' => Employee::when($request->term, function ($query, $term) {
-                $query->where('normalized_name', 'LIKE', '%' . normalizeArabic($term) . '%')
-                    ->orWhere('email', 'LIKE', '%' . $term . '%')
-                    ->orWhere('id', 'LIKE', '%' . $term . '%')
-                    ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                    ->orWhere('national_id', 'LIKE', '%' . $term . '%');
+                $query->where('normalized_name', 'LIKE', '%'.normalizeArabic($term).'%')
+                    ->orWhere('email', 'LIKE', '%'.$term.'%')
+                    ->orWhere('id', 'LIKE', '%'.$term.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$term.'%')
+                    ->orWhere('national_id', 'LIKE', '%'.$term.'%');
             })->orderBy($request->sort ?? 'id', $sortDir)->select(['id', 'name', 'email', 'phone', 'national_id'])
                 ->paginate(config('constants.data.pagination_count')),
         ]);
@@ -64,11 +66,11 @@ class EmployeeController extends Controller
 
         return Inertia::render('Employee/ArchievedEmployees', [
             'employees' => ArchivedEmployee::when($request->term, function ($query, $term) {
-                $query->where('name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('email', 'LIKE', '%' . $term . '%')
-                    ->orWhere('id', 'LIKE', '%' . $term . '%')
-                    ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                    ->orWhere('national_id', 'LIKE', '%' . $term . '%');
+                $query->where('name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('email', 'LIKE', '%'.$term.'%')
+                    ->orWhere('id', 'LIKE', '%'.$term.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$term.'%')
+                    ->orWhere('national_id', 'LIKE', '%'.$term.'%');
             })->orderBy($request->sort ?? 'released_on', $sortDir)
                 ->select(['id', 'name', 'email', 'phone', 'national_id', 'hired_on', 'released_on'])
                 ->paginate(config('constants.data.pagination_count')),
@@ -96,6 +98,7 @@ class EmployeeController extends Controller
     {
         // Validate Input Firsts
         $res = $this->validationServices->validateEmployeeCreationDetails($request);
+
         // Employee Registration
         return $this->employeeServices->createEmployee($res);
     }
@@ -109,7 +112,7 @@ class EmployeeController extends Controller
     public function show(string $id): Response
     {
         return Inertia::render('Employee/EmployeeView', [
-            'employee' => Employee::with("salaries", "roles", 'employeeShifts.shift', 'employeePositions.position', 'manages')
+            'employee' => Employee::with('salaries', 'roles', 'employeeShifts.shift', 'employeePositions.position', 'manages')
                 ->leftjoin('departments', 'employees.department_id',
                     '=', 'departments.id')
                 ->leftJoin('branches', 'employees.branch_id', '=', 'branches.id')
@@ -128,7 +131,7 @@ class EmployeeController extends Controller
     public function edit(string $id)
     {
         return Inertia::render('Employee/EmployeeEdit', [
-            'employee' => Employee::with("salaries", "roles", 'employeeShifts.shift', 'employeePositions.position')
+            'employee' => Employee::with('salaries', 'roles', 'employeeShifts.shift', 'employeePositions.position')
                 ->leftjoin('departments', 'employees.department_id',
                     '=', 'departments.id')
                 ->leftJoin('branches', 'employees.branch_id', '=', 'branches.id')
@@ -170,11 +173,11 @@ class EmployeeController extends Controller
         return Inertia::render('Employee/EmployeeFind', [
             'employees' => Employee::when($request->term, function ($query, $term) {
                 $query
-                    ->where('name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('id', 'LIKE', '%' . $term . '%')
-                    ->orWhere('email', 'LIKE', '%' . $term . '%')
-                    ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                    ->orWhere('national_id', 'LIKE', '%' . $term . '%');
+                    ->where('name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('id', 'LIKE', '%'.$term.'%')
+                    ->orWhere('email', 'LIKE', '%'.$term.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$term.'%')
+                    ->orWhere('national_id', 'LIKE', '%'.$term.'%');
             })->get(),
         ]);
     }

@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Deduction extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
@@ -28,9 +29,9 @@ class Deduction extends Model
             $this->undertime +
             $this->union_fees;
     }
+
     public function payroll(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Payroll::class);
     }
-
 }

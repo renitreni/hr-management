@@ -39,5 +39,4 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit');
     }
-
 }

@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Addition extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
@@ -27,6 +28,7 @@ class Addition extends Model
             $this->overtime +
             $this->commissions;
     }
+
     public function payroll(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Payroll::class);

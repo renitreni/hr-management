@@ -20,7 +20,7 @@ class StarterSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * 
+     *
      * php artisan db:seed --class=StarterSeeder
      */
     public function run(): void
@@ -46,7 +46,7 @@ class StarterSeeder extends Seeder
             'description' => 'Responsible for all HR activities',
         ]);
         Shift::create([
-            'name' => "Day Shift",
+            'name' => 'Day Shift',
             'start_time' => '08:00:00',
             'end_time' => '16:00:00',
         ]);

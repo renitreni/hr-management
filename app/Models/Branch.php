@@ -10,11 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Branch extends Model
 {
     use HasFactory, LogsActivity;
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['name', 'text']);
     }
+
     protected $fillable = ['name', 'address', 'phone', 'email'];
 
     public function manager(): \Illuminate\Database\Eloquent\Relations\HasOneThrough

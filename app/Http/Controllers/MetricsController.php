@@ -35,6 +35,7 @@ class MetricsController extends Controller
         $res = $validationServices->validateMetricCreationDetails($request);
         $res['step'] /= 100;
         $metric = Metric::create($res);
+
         return to_route('metrics.show', ['metric' => $metric->id, 'id' => $metric->id]);
     }
 
@@ -66,6 +67,7 @@ class MetricsController extends Controller
         $res = $validationServices->validateMetricUpdateDetails($request, $id);
         $res['step'] /= 100;
         Metric::findOrFail($id)->update($res);
+
         return to_route('metrics.show', ['metric' => $id]);
     }
 
@@ -75,6 +77,7 @@ class MetricsController extends Controller
     public function destroy(string $id)
     {
         Metric::findOrFail($id)->delete();
+
         return to_route('metrics.index');
     }
 }

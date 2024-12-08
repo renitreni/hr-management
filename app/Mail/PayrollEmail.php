@@ -28,7 +28,7 @@ class PayrollEmail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '['. Globals::first()->organization_name . '] Payroll Details',
+            subject: '['.Globals::first()->organization_name.'] Payroll Details',
         );
     }
 

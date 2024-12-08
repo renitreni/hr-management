@@ -11,7 +11,9 @@ use Inertia\Inertia;
 class ShiftController extends Controller
 {
     protected ShiftServices $shiftServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->shiftServices = new ShiftServices;
@@ -24,8 +26,7 @@ class ShiftController extends Controller
     public function index()
     {
         return Inertia::render('Shift/Shifts', [
-            'shifts' => Shift::
-            select(['id', 'name', 'start_time', 'end_time', 'shift_payment_multiplier', 'description'])
+            'shifts' => Shift::select(['id', 'name', 'start_time', 'end_time', 'shift_payment_multiplier', 'description'])
                 ->withCount('employees')
                 ->orderBy('id')
                 ->paginate(config('constants.data.pagination_count')),
@@ -53,18 +54,16 @@ class ShiftController extends Controller
     /**
      * Display the specified resource.
      */
-
-
     public function show(string $id, Request $request)
     {
-        $shift = Shift::withCount("employees")->findOrFail($id);
+        $shift = Shift::withCount('employees')->findOrFail($id);
         $employees = $shift->employees()
             ->where(function ($query) use ($request) {
-                $query->where('employees.name', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.email', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.id', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.phone', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.national_id', 'LIKE', '%' . $request->term . '%');
+                $query->where('employees.name', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.email', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.id', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.phone', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.national_id', 'LIKE', '%'.$request->term.'%');
             })
             ->orderBy('employees.id')
             ->paginate(config('constants.data.pagination_count'), ['employees.id', 'employees.name', 'employees.phone', 'employees.email', 'employees.national_id']);
@@ -82,6 +81,7 @@ class ShiftController extends Controller
     public function edit(string $id)
     {
         $shift = Shift::withCount('employees')->findOrFail($id);
+
         return Inertia::render('Shift/ShiftEdit', [
             'shift' => $shift,
             'name' => $shift->getRawOriginal('name'),

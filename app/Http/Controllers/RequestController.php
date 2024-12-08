@@ -7,12 +7,13 @@ use App\Services\ValidationServices;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-
 // Using \App\Models\Request instead of Request because Request is a class in Illuminate\Http\Request
 class RequestController extends Controller
 {
     protected RequestServices $requestServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->requestServices = new RequestServices;
@@ -28,9 +29,10 @@ class RequestController extends Controller
             ->select(['requests.id', 'employees.name as employee_name', 'requests.type', 'requests.start_date',
                 'requests.end_date', 'requests.status', 'requests.is_seen']);
 
-        if (!isAdmin()) {
+        if (! isAdmin()) {
             $requests->where('requests.employee_id', auth()->user()->id);
         }
+
         return Inertia::render('Request/Requests', [
             'requests' => $requests->orderBy('requests.status')
                 ->paginate(config('constants.data.pagination_count')),
@@ -53,6 +55,7 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $req = $this->validationServices->validateRequestCreationDetails($request);
+
         return $this->requestServices->createRequest($req, $request);
     }
 
@@ -69,11 +72,11 @@ class RequestController extends Controller
             // This will be used to display the number of unseen requests in the sidebar of user dashboard.
             $request->update(['is_seen' => true]);
         }
+
         return Inertia::render('Request/RequestView', [
             'request' => $request,
         ]);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -89,6 +92,7 @@ class RequestController extends Controller
     public function destroy(string $id)
     {
         \App\Models\Request::findOrFail($id)->delete();
+
         return to_route('requests.index');
     }
 }

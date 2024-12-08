@@ -18,8 +18,8 @@ class EmployeeRegisterationCredentials extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public function __construct(
-        public Array $credentials
-    ){}
+        public array $credentials
+    ) {}
 
     /**
      * Get the message envelope.
@@ -27,7 +27,7 @@ class EmployeeRegisterationCredentials extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[' . Globals::first()->organization_name . '] Your account has been created!',
+            subject: '['.Globals::first()->organization_name.'] Your account has been created!',
         );
     }
 

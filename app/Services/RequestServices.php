@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-
 use App\Mail\RequestStatusUpdated;
 use Arr;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Inertia\Inertia;
 
 class RequestServices
 {
@@ -18,8 +16,9 @@ class RequestServices
         /* Check if the employee requested a leave request that is before present day, which is not allowed.
         Used !isAfter instead of isBefore because the latter rejects same day requests, which I don't intend to prevent */
 
-        if ($req['type'] == 'leave' && $startDate->isBefore(Carbon::now()) && !$startDate->isSameDay(Carbon::now()))
+        if ($req['type'] == 'leave' && $startDate->isBefore(Carbon::now()) && ! $startDate->isSameDay(Carbon::now())) {
             return back()->withErrors(['past_leave' => 'You can\'t make a leave request before today.']);
+        }
 
         $req['start_date'] = $req['date'][0];
         $req['end_date'] = $req['date'][1];
@@ -30,6 +29,7 @@ class RequestServices
 
         return to_route('requests.index');
     }
+
     public function updateRequest($request, $id)
     {
         $req = $request->validate([
@@ -42,6 +42,4 @@ class RequestServices
         // Send Email to Employee informing them of the status update.
         Mail::to($empReq->employee->email)->send(new RequestStatusUpdated($empReq));
     }
-
-
 }

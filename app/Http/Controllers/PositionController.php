@@ -10,6 +10,7 @@ use Inertia\Inertia;
 class PositionController extends Controller
 {
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->validationServices = new ValidationServices;
@@ -22,9 +23,9 @@ class PositionController extends Controller
     {
         return Inertia::render('Position/Positions', [
             'positions' => Position::when($request->term, function ($query, $term) {
-                $query->where('id', 'LIKE', '%' . $term . '%')
-                    ->orWhere('name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('description', 'LIKE', '%' . $term . '%');
+                $query->where('id', 'LIKE', '%'.$term.'%')
+                    ->orWhere('name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('description', 'LIKE', '%'.$term.'%');
             })
                 ->select(['id', 'name', 'description'])
                 ->withCount('employees')
@@ -54,23 +55,22 @@ class PositionController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        $position = Position::withCount("employees")->findOrFail($id);
+        $position = Position::withCount('employees')->findOrFail($id);
         $employees = $position->employees()->where(function ($query) use ($request) {
-            $query->where('employees.normalized_name', 'LIKE', '%' . normalizeArabic($request->term) . '%')
-                ->orWhere('employees.email', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.id', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.phone', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.national_id', 'LIKE', '%' . $request->term . '%');
+            $query->where('employees.normalized_name', 'LIKE', '%'.normalizeArabic($request->term).'%')
+                ->orWhere('employees.email', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.id', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.phone', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.national_id', 'LIKE', '%'.$request->term.'%');
         })
             ->orderBy('employees.id')
             ->paginate(config('constants.data.pagination_count'), ['employees.id', 'employees.name', 'employees.phone', 'employees.email', 'employees.national_id']);
 
         return Inertia::render('Position/PositionView', [
             'position' => $position,
-            'employees' => $employees
+            'employees' => $employees,
         ]);
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -78,7 +78,7 @@ class PositionController extends Controller
     public function edit(string $id)
     {
         return Inertia::render('Position/PositionEdit', [
-            'position' => Position::withCount('employees')->findOrFail($id)
+            'position' => Position::withCount('employees')->findOrFail($id),
         ]);
     }
 
@@ -89,6 +89,7 @@ class PositionController extends Controller
     {
         $res = $validationServices->validatePositionUpdateDetails($request, $id);
         Position::findOrFail($id)->update($res);
+
         return to_route('positions.show', ['position' => $id]);
     }
 
@@ -98,6 +99,7 @@ class PositionController extends Controller
     public function destroy(string $id)
     {
         Position::findOrFail($id)->delete();
+
         return to_route('positions.index');
     }
 }

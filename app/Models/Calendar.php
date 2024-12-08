@@ -9,6 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Calendar extends Model
 {
     use LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions

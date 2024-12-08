@@ -140,6 +140,7 @@ class EmployeeServices
             $employee->assignRole($res['role']);
             $employee->save();
         }
+
         return to_route('employees.show', ['employee' => $employee->id]);
     }
 

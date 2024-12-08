@@ -15,7 +15,9 @@ use Inertia\Inertia;
 class PayrollController extends Controller
 {
     protected PayrollServices $payrollServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->payrollServices = new PayrollServices;
@@ -49,26 +51,28 @@ class PayrollController extends Controller
             ->orderBy('id');
 
         // Limit to logged-in employee if not admin
-        if (!isAdmin())
-            $payrolls->where('payrolls.employee_id', auth()->user()->id);
+        if (! isAdmin()) {
+            $payrolls->where('payrolls.employee_id', auth()->id);
+        }
 
         // Date Filter
-        if ($date)
+        if ($date) {
             $payrolls->whereYear('due_date', $request->date['year'])->whereMonth('due_date', $request->date['month'] + 1);
+        }
 
         // Status Filter
         if ($statusParam == 'pending') {
             $payrolls->where('status', false)->where('is_reviewed', false);
-        } else if ($statusParam == 'reviewed') {
+        } elseif ($statusParam == 'reviewed') {
             $payrolls->where('status', false)->where('is_reviewed', true);
-        } else if ($statusParam == 'paid') {
+        } elseif ($statusParam == 'paid') {
             $payrolls->where('status', true);
         }
 
         return Inertia::render('Payroll/Payrolls', [
             'payrolls' => $payrolls->paginate(config('constants.data.pagination_count')),
-            "dateParam" => $date,
-            "statusParam" => $statusParam,
+            'dateParam' => $date,
+            'statusParam' => $statusParam,
         ]);
     }
 
@@ -77,7 +81,7 @@ class PayrollController extends Controller
      */
     public function show(string $id)
     {
-        authenticateIfNotAdmin(auth()->user()->id, $id);
+        authenticateIfNotAdmin(auth()->id, $id);
         $payroll = Payroll::with('employee')->find($id);
         if ($payroll) {
             return Inertia::render('Payroll/PayrollView', [
@@ -96,11 +100,12 @@ class PayrollController extends Controller
         $payroll = Payroll::with('employee')->findOrFail($id);
         $payrollDate = Carbon::parse($payroll->due_date)->subMonthNoOverflow();
 
-        $commonServices = new CommonServices();
+        $commonServices = new CommonServices;
         $dates = [$payrollDate->year, $payrollDate->month, 1, $payrollDate->year, $payrollDate->month, $payrollDate->daysInMonth];
+
         return Inertia::render('Payroll/PayrollReview', [
             'payroll' => $payroll,
-            "month_stats" => $commonServices->getMonthStats($payroll->employee, $dates),
+            'month_stats' => $commonServices->getMonthStats($payroll->employee, $dates),
             'additions' => $payroll->additions, // PLACEHOLDER CODE. MUCH MORE WORK NEEDED HERE
             'deductions' => $payroll->deductions, // PLACEHOLDER CODE. MUCH MORE WORK NEEDED HERE
             'income_tax' => Globals::select('income_tax')->get()->first(), // PLACEHOLDER CODE. MUCH MORE WORK NEEDED HERE
@@ -116,6 +121,7 @@ class PayrollController extends Controller
     public function update(Request $request, string $id)
     {
         $res = $this->validationServices->validatePayrollReviewDetails($request);
+
         return $this->payrollServices->updatePayroll($res, $id);
     }
 
@@ -126,7 +132,6 @@ class PayrollController extends Controller
     {
         $this->payrollServices->updatePayrollStatus($request, $id);
     }
-
 
     /**
      * Remove the specified resource from storage.

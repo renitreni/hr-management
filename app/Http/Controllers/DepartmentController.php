@@ -13,7 +13,9 @@ use Inertia\Response;
 class DepartmentController extends Controller
 {
     protected DepartmentServices $departmentServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->validationServices = new ValidationServices;
@@ -27,7 +29,7 @@ class DepartmentController extends Controller
     {
         return Inertia::render('Department/Departments', [
             'departments' => Department::when($request->term, function ($query, $term) {
-                $query->where('name', 'LIKE', '%' . $term . '%');
+                $query->where('name', 'LIKE', '%'.$term.'%');
             })
                 ->select(['id', 'name'])
                 ->withCount('employees')
@@ -42,7 +44,7 @@ class DepartmentController extends Controller
     public function create(): Response
     {
         return Inertia::render('Department/DepartmentCreate', [
-            'employees' => Employee::select(['id', 'name'])->get()
+            'employees' => Employee::select(['id', 'name'])->get(),
         ]);
     }
 
@@ -52,6 +54,7 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $res = $this->validationServices->validateDepartmentCreationDetails($request);
+
         return $this->departmentServices->createDepartment($res);
     }
 
@@ -60,14 +63,14 @@ class DepartmentController extends Controller
      */
     public function show(string $id, Request $request): Response
     {
-        $department = Department::withCount("employees")->findOrFail($id);
+        $department = Department::withCount('employees')->findOrFail($id);
         $employees = $department->employees()
             ->where(function ($query) use ($request) {
-                $query->where('employees.normalized_name', 'LIKE', '%' . normalizeArabic($request->term) . '%')
-                    ->orWhere('employees.email', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.id', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.phone', 'LIKE', '%' . $request->term . '%')
-                    ->orWhere('employees.national_id', 'LIKE', '%' . $request->term . '%');
+                $query->where('employees.normalized_name', 'LIKE', '%'.normalizeArabic($request->term).'%')
+                    ->orWhere('employees.email', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.id', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.phone', 'LIKE', '%'.$request->term.'%')
+                    ->orWhere('employees.national_id', 'LIKE', '%'.$request->term.'%');
             })
             ->orderBy('employees.id')
             ->paginate(config('constants.data.pagination_count'),
@@ -88,7 +91,7 @@ class DepartmentController extends Controller
     {
         return Inertia::render('Department/DepartmentEdit', [
             'department' => Department::with('manager')->withCount('employees')->findOrFail($id),
-            'employees' => Employee::select(['id', 'name'])->get()
+            'employees' => Employee::select(['id', 'name'])->get(),
         ]);
     }
 
@@ -98,6 +101,7 @@ class DepartmentController extends Controller
     public function update(Request $request, string $id)
     {
         $res = $this->validationServices->validateDepartmentUpdateDetails($request, $id);
+
         return $this->departmentServices->updateDepartment($res, $id);
     }
 
@@ -107,6 +111,7 @@ class DepartmentController extends Controller
     public function destroy(string $id)
     {
         Department::findOrFail($id)->delete();
+
         return to_route('departments.index');
     }
 }

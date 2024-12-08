@@ -19,7 +19,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user() ? $request->user()->only('id', 'name', 'email')
-                        + ["roles"=>$request->user()->getRoleNames()] : null,
+                        + ['roles' => $request->user()->getRoleNames()] : null,
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
@@ -42,17 +42,17 @@ class HandleInertiaRequests extends Middleware
                 ]);
             },
             'ui' => [
-                'empCount'=> Employee::count(),
+                'empCount' => Employee::count(),
                 // Admin sees pending requests count in the sidebar, while employees see only updated requests count.
-                'reqCount'=> $request->user() ? ( isAdmin() ? \App\Models\Request::where('status', 0)->count() :
+                'reqCount' => $request->user() ? (isAdmin() ? \App\Models\Request::where('status', 0)->count() :
                                         \App\Models\Request::where('employee_id', auth()->user()->id)
                                             ->where('status', '!=', 0)->where('is_seen', false)->count()) : null,
             ],
             'session' => [
                 'update_in_progress' => session('update_in_progress'),
             ],
-            'locale'=> config('app.locale'),
-            'timezone'=> config('app.timezone'),
+            'locale' => config('app.locale'),
+            'timezone' => config('app.timezone'),
         ]);
     }
 }

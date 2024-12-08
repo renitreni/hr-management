@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('globals', function (Blueprint $table) {
             $table->id();
             $table->string('organization_name');
-            $table->string('timezone')->default("Africa/Cairo"); // Africa/Cairo for example.
+            $table->string('timezone')->default('Africa/Cairo'); // Africa/Cairo for example.
             $table->string('organization_address'); // Probably you only need the country, not full address
             $table->unsignedSmallInteger('absence_limit');
             $table->unsignedTinyInteger('payroll_day')->default(1);

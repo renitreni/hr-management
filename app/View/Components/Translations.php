@@ -24,7 +24,7 @@ class Translations extends Component
     {
         $locale = app()->getLocale();
         $translations = [];
-        if(File::exists(base_path("lang/$locale.json"))){
+        if (File::exists(base_path("lang/$locale.json"))) {
             $translations = json_decode(\File::get(base_path("lang/$locale.json")), true);
         }
 

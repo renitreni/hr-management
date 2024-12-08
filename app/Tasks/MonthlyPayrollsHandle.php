@@ -13,7 +13,7 @@ class MonthlyPayrollsHandle
 {
     public function __invoke(): void
     {
-        logger("Monthly Maintenance is running");
+        logger('Monthly Maintenance is running');
         Artisan::call('down --retry=1 --secret=HelloKittyImNotSoPretty --render="errors::503_monthly"');
 
         // Generate Payrolls
@@ -29,19 +29,19 @@ class MonthlyPayrollsHandle
                 'base' => $employee->salary()[1],
                 'total_payable' => $employee->salary()[1],
                 'performance_multiplier' => 1,
-                "due_date" => $date,
+                'due_date' => $date,
             ]);
             Addition::create([
                 'payroll_id' => $payroll->id,
-                "due_date" => $date,
+                'due_date' => $date,
             ]);
             Deduction::create([
                 'payroll_id' => $payroll->id,
-                "due_date" => $date,
+                'due_date' => $date,
             ]);
         }
 
         Artisan::call('up');
-        logger("MonthlyMaintenance Completed");
+        logger('MonthlyMaintenance Completed');
     }
 }

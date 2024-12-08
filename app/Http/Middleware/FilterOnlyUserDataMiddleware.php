@@ -14,7 +14,6 @@ class FilterOnlyUserDataMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
 
-
     /*** This middleware will be applied on the 'index' of controllers. It will be a parameter that tells the controller
      * to only return the data of the logged-in user, not the entire staff.
      * Why doing it this way? Because I don't want to create a separate controller method to retrieve current user data
@@ -25,6 +24,7 @@ class FilterOnlyUserDataMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $request->merge(['FilterMyData' => true]);
+
         return $next($request);
     }
 }

@@ -11,23 +11,27 @@ use Inertia\Inertia;
 class CalendarController extends Controller
 {
     protected CalendarServices $calendarServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->calendarServices = new CalendarServices;
         $this->validationServices = new ValidationServices;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function calendarIndex()
     {
-        if (!isAdmin()) {
+        if (! isAdmin()) {
             // Don't expose leave requests to non-admins other than the employee's.
             $leaveRequests = \App\Models\Request::with('employee')->where('status', 1)->where('employee_id', '=', auth()->user()->id)->get();
         } else {
             $leaveRequests = \App\Models\Request::with('employee')->where('status', 1)->get();
         }
+
         return Inertia::render('Calendar/Calendar', [
             'calendarItems' => Calendar::get(),
             'leaveRequests' => $leaveRequests,
@@ -88,6 +92,7 @@ class CalendarController extends Controller
     public function update(Request $request, string $id)
     {
         $res = $this->validationServices->validateCalendarItemCreationDetails($request);
+
         return $this->calendarServices->updateCalendarItem($res, $id);
     }
 
@@ -97,6 +102,7 @@ class CalendarController extends Controller
     public function destroy(string $id)
     {
         Calendar::findOrFail($id)->delete();
+
         return to_route('calendars.index');
     }
 }

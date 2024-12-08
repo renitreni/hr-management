@@ -17,8 +17,7 @@ class RequestStatusUpdated extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      */
-    public function __construct(public \App\Models\Request $request)
-    {}
+    public function __construct(public \App\Models\Request $request) {}
 
     /**
      * Get the message envelope.
@@ -26,7 +25,7 @@ class RequestStatusUpdated extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '['. Globals::first()->organization_name . '] Request Update',
+            subject: '['.Globals::first()->organization_name.'] Request Update',
         );
     }
 

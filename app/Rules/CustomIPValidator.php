@@ -14,7 +14,8 @@ class CustomIPValidator implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!preg_match('/^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)$/', $value) )
+        if (! preg_match('/^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)$/', $value)) {
             $fail('The :attribute must be follow this pattern X.X.X.X or X.X.X.*');
+        }
     }
 }

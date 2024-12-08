@@ -15,8 +15,11 @@ use Inertia\Inertia;
 class AttendanceController extends Controller
 {
     protected AttendanceServices $attendanceServices;
+
     protected ValidationServices $validationServices;
+
     protected CommonServices $commonServices;
+
     public function __construct()
     {
         $this->attendanceServices = new AttendanceServices;
@@ -30,7 +33,7 @@ class AttendanceController extends Controller
     public function attendanceDashboard()
     {
         return Inertia::render('Attendance/AttendanceDashboard', [
-            "EmployeeStats" => auth()->user()->myStats(),
+            'EmployeeStats' => auth()->user()->myStats(),
         ]);
     }
 
@@ -43,8 +46,9 @@ class AttendanceController extends Controller
 
         if ($dateParam) {
             $date = Carbon::createFromFormat('Y-m-d', $dateParam)->startOfDay();
-            if ($date->isAfter(Carbon::today()))
+            if ($date->isAfter(Carbon::today())) {
                 return response()->json(['Error' => 'Date cannot be in the future. Go back and choose a date before today.']);
+            }
 
             $date = $date->toDateString();
         } else {
@@ -58,12 +62,13 @@ class AttendanceController extends Controller
             DB::raw('COUNT(CASE WHEN status = \'missed\' THEN 1 END) as missed_count')
         )->groupBy('date')->orderByDesc('date');
 
-        if ($date)
+        if ($date) {
             $attendanceList->where('date', '=', $date);
+        }
 
         return Inertia::render('Attendance/Attendances', [
-            "attendanceList" => $attendanceList->paginate(config('constants.data.pagination_count')),
-            "dateParam" => $date,
+            'attendanceList' => $attendanceList->paginate(config('constants.data.pagination_count')),
+            'dateParam' => $date,
         ]);
     }
 
@@ -86,13 +91,13 @@ class AttendanceController extends Controller
         }
 
         $attendanceList = Attendance::with('employee:employees.id,name')->where('date', $date)->orderBy('id')->get();
-        $attendable = !$this->commonServices->isDayOff($date);
+        $attendable = ! $this->commonServices->isDayOff($date);
 
         return Inertia::render('Attendance/AttendanceCreate', [
-            "dateParam" => $request->term ?? Carbon::today()->toDateString(),
-            "employees" => Employee::select(['id', 'name'])->where('hired_on', '<=', $date)->orderBy('id')->get(),
-            "attendances" => $attendanceList,
-            "attendable" => $attendable,
+            'dateParam' => $request->term ?? Carbon::today()->toDateString(),
+            'employees' => Employee::select(['id', 'name'])->where('hired_on', '<=', $date)->orderBy('id')->get(),
+            'attendances' => $attendanceList,
+            'attendable' => $attendable,
         ]);
     }
 
@@ -102,14 +107,16 @@ class AttendanceController extends Controller
     public function store(Request $request)
     {
         $res = $this->validationServices->validateMassAttendanceCreation($request);
+
         return $this->attendanceServices->createAttendance($res, $this->commonServices);
     }
 
     public function dayShow(string $day)
     {
         $date = $this->validationServices->validateDayAttendanceDateParameter($day);
-        if (!is_string($date)) // ERROR
-            return $date; // Error Message
+        if (! is_string($date)) { // ERROR
+            return $date;
+        } // Error Message
 
         $attendanceList = Attendance::where('date', $date)
             ->join('employees', 'attendances.employee_id', '=', 'employees.id')
@@ -117,8 +124,8 @@ class AttendanceController extends Controller
             ->orderByDesc('attendances.created_at')->paginate(config('constants.data.pagination_count'));
 
         return Inertia::render('Attendance/AttendanceDayView', [
-            "attendanceList" => $attendanceList,
-            "day" => $date
+            'attendanceList' => $attendanceList,
+            'day' => $date,
         ]);
     }
 
@@ -127,6 +134,7 @@ class AttendanceController extends Controller
         $res = $request->validate([
             'date' => 'required|date_format:Y-m-d',
         ]);
+
         return $this->attendanceServices->deleteDayAttendance($res);
     }
 
@@ -143,5 +151,4 @@ class AttendanceController extends Controller
     {
         return $this->attendanceServices->selfSignOffAttendance($request);
     }
-
 }

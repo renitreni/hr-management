@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class EmployeeSalary extends Model
 {
@@ -17,14 +17,13 @@ class EmployeeSalary extends Model
         return LogOptions::defaults();
     }
 
-
     public function employee()
     {
         return $this->belongsTo(Employee::class);
     }
 
     // This function should be in a helper, not in this model because it might be used somewhere else.
-    function getCurrencySymbol()
+    public function getCurrencySymbol()
     {
         $currencySymbols = [
             'EGP' => 'E£',
@@ -34,7 +33,7 @@ class EmployeeSalary extends Model
             'CAD' => '$',
             'KWD' => 'د.ك',
             'SAR' => '﷼',
-            'AED' => 'د.إ'
+            'AED' => 'د.إ',
         ];
 
         return $currencySymbols[$this->currency] ?? '';

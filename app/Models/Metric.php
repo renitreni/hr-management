@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Metric extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
@@ -33,11 +34,12 @@ class Metric extends Model
         for ($i = -3; $i <= 3; $i++) {
             $res[$keys[$k]] = 1 + floatval($this->step) * $i;
 
-            if($res[$keys[$k]] == $value){
+            if ($res[$keys[$k]] == $value) {
                 return $keys[$k];
             }
             $k++;
         }
+
         return 'NULL';
     }
 }

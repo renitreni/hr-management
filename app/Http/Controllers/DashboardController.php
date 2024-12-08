@@ -9,17 +9,16 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-
     public function index()
     {
-        $commonServices = new CommonServices();
+        $commonServices = new CommonServices;
         $isTodayOff = $commonServices->isTodayOff();
 
         $attendanceChecker = auth()->user()->attendances()->where('date', Carbon::today()->toDateString())->first();
 
         if (is_null($attendanceChecker)) {
             $attendanceStatus = 0;
-        } else if ($attendanceChecker->sign_off_time == null) {
+        } elseif ($attendanceChecker->sign_off_time == null) {
             $attendanceStatus = 1;
         } else {
             $attendanceStatus = 2;
@@ -28,9 +27,9 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'salary' => auth()->user()->salary(),
             'payroll_day' => Globals::first()->payroll_day,
-            "employee_stats" => auth()->user()->myStats(),
-            "attendance_status" => $attendanceStatus,
-            "is_today_off" => $isTodayOff,
+            'employee_stats' => auth()->user()->myStats(),
+            'attendance_status' => $attendanceStatus,
+            'is_today_off' => $isTodayOff,
         ]);
     }
 }

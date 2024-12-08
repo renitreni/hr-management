@@ -30,7 +30,6 @@ use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
-
     /**
      * Seed the application's database.
      */
@@ -49,7 +48,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '01001005000',
             'national_id' => '29904268801154',
             'hired_on' => '2023-01-25',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
         $emp = Employee::factory()->create([
             'name' => 'Spicy Leaf',
@@ -57,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '01001005001',
             'national_id' => '29904268801155',
             'hired_on' => '2023-01-25',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         Employee::factory(14)->create();
@@ -108,11 +107,11 @@ class DatabaseSeeder extends Seeder
 
             $days = $currentDate->diffInDays($startDate);
             $attendanceTypes = ['on_time', 'late', 'missed'];
-            $commonServices = new CommonServices();
+            $commonServices = new CommonServices;
 
             for ($i = 0; $i < $days; $i++) {
-                if (!$commonServices->isDayOff($startDate->format('Y-m-d'))) {
-                    if(fake()->boolean){
+                if (! $commonServices->isDayOff($startDate->format('Y-m-d'))) {
+                    if (fake()->boolean) {
                         Attendance::create([
                             'employee_id' => $employee->id,
                             'date' => $startDate->format('Y-m-d'),
@@ -122,9 +121,9 @@ class DatabaseSeeder extends Seeder
                         ]);
                     } else {
                         Attendance::create([
-                        'employee_id' => $employee->id,
-                        'date' => $startDate->format('Y-m-d'),
-                        'status' => 'missed',
+                            'employee_id' => $employee->id,
+                            'date' => $startDate->format('Y-m-d'),
+                            'status' => 'missed',
                         ]);
                     }
                 }
@@ -162,6 +161,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'info@globalsolutions.com',
         ]);
     }
+
     private function seedBranchesDepartmentsPositionsShifts(): void
     {
         Branch::factory()->create([
@@ -209,13 +209,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Shift::create([
-            'name' => "Day Shift",
+            'name' => 'Day Shift',
             'start_time' => '08:00:00',
             'end_time' => '16:00:00',
         ]);
 
         Shift::create([
-            'name' => "Night Shift",
+            'name' => 'Night Shift',
             'start_time' => '16:00:00',
             'end_time' => '00:00:00',
         ]);
@@ -251,13 +251,15 @@ class DatabaseSeeder extends Seeder
             ]);
         }
     }
-    private function generateRandomPayrolls(){
+
+    private function generateRandomPayrolls()
+    {
         for ($i = 1; $i <= Employee::count(); $i++) {
             $employee_id = Employee::find($i)->id;
 
             $p = Payroll::factory()->create([
                 'employee_id' => $employee_id,
-                "due_date" => Carbon::now()->toDateString(),
+                'due_date' => Carbon::now()->toDateString(),
             ]);
 
             $metrics = Metric::get();
@@ -273,14 +275,13 @@ class DatabaseSeeder extends Seeder
 
             Addition::factory()->create([
                 'payroll_id' => $p->id,
-                "due_date" => Carbon::now()->toDateString(),
+                'due_date' => Carbon::now()->toDateString(),
             ]);
 
             Deduction::factory()->create([
                 'payroll_id' => $p->id,
-                "due_date" => Carbon::now()->toDateString(),
+                'due_date' => Carbon::now()->toDateString(),
             ]);
         }
     }
-
 }

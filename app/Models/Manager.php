@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Manager extends Model
 {
     use LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions

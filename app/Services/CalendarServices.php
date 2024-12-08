@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Calendar;
-use Inertia\Inertia;
 
 class CalendarServices
 {
@@ -16,6 +15,7 @@ class CalendarServices
             'type' => $res['type'],
         ]);
     }
+
     public function updateCalendarItem($res, $id): \Illuminate\Http\RedirectResponse
     {
         Calendar::findOrFail($id)->update([
@@ -24,7 +24,7 @@ class CalendarServices
             'title' => $res['title'],
             'type' => $res['type'],
         ]);
+
         return to_route('calendars.index');
     }
-
 }

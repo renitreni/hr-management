@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Payroll extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
@@ -26,6 +27,7 @@ class Payroll extends Model
     {
         return $this->hasOne(Addition::class);
     }
+
     public function deductions(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Deduction::class);
@@ -36,14 +38,14 @@ class Payroll extends Model
         return $this->hasMany(EmployeeEvaluation::class);
     }
 
-//    protected function status(): Attribute
-//    {
-//        return Attribute::make(
-//            get: fn (bool $value) => match ($value) {
-//                true => 'Paid',
-//                false => 'Pending',
-//            },
-//        );
-//    }
+    //    protected function status(): Attribute
+    //    {
+    //        return Attribute::make(
+    //            get: fn (bool $value) => match ($value) {
+    //                true => 'Paid',
+    //                false => 'Pending',
+    //            },
+    //        );
+    //    }
 
 }

@@ -6,16 +6,14 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Globals;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
 
 class AttendanceServices
 {
     private function validateIP($ip_to_check): bool
     {
         $org_ips = json_decode(Globals::first()->ip);
-        foreach ($org_ips as $org_ip){
-            if(str_contains($org_ip, '*')) {
+        foreach ($org_ips as $org_ip) {
+            if (str_contains($org_ip, '*')) {
                 $org_ip_segment = explode('*', $org_ip)[0];
                 $checker = 0;
                 for ($i = 0; $i < strlen($org_ip_segment); $i++) {
@@ -26,13 +24,14 @@ class AttendanceServices
                 if ($checker == strlen($org_ip_segment)) {
                     return true;
                 }
-            }
-            else if($ip_to_check == $org_ip) {
+            } elseif ($ip_to_check == $org_ip) {
                 return true;
             }
         }
+
         return false;
     }
+
     private function validateRequest($request)
     {
         /***
@@ -45,7 +44,7 @@ class AttendanceServices
          */
 
         //-- Check if today is a holiday or not --//
-        $commonServices = new CommonServices();
+        $commonServices = new CommonServices;
         $isTodayOff = $commonServices->isTodayOff();
         if ($isTodayOff) {
             return [
@@ -63,7 +62,7 @@ class AttendanceServices
                             <br/>Please contact your system administrator and inform them of them error.',
             ];
         }
-        if (!auth()->user()->is_remote && $globals->is_ip_based && !$this->validateIP($request->ip())) {
+        if (! auth()->user()->is_remote && $globals->is_ip_based && ! $this->validateIP($request->ip())) {
             return [
                 'ip_error' => 'You are probably not inside the organization.<br/> Attendance can be only taken from inside.<br/>Please contact your system administrator if you think this was a mistake.',
             ];
@@ -76,6 +75,7 @@ class AttendanceServices
             ];
         }
     }
+
     public function createAttendance($res, $commonServices): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $isDayOff = $commonServices->isDayOff($res['date']);
@@ -99,6 +99,7 @@ class AttendanceServices
                 for ($j = 1; $j < count($empAtt); $j++) {
                     $empAtt[$j]->delete();
                 }
+
                 continue;
             }
 
@@ -115,6 +116,7 @@ class AttendanceServices
 
         return to_route('attendances.index');
     }
+
     public function deleteDayAttendance($res): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
 
@@ -123,6 +125,7 @@ class AttendanceServices
             return response()->json(['message' => 'Date cannot be in the future. Go back and choose a date before today.']);
         }
         Attendance::where('date', $res['date'])->delete();
+
         return to_route('attendances.index');
     }
 
@@ -145,21 +148,23 @@ class AttendanceServices
         // If there is an attendance record for the employee on the date, update it
         Attendance::firstOrCreate(
             [
-                "employee_id" => $request->id,
-                "date" => $today,
+                'employee_id' => $request->id,
+                'date' => $today,
             ],
             [
-                "sign_in_time" => $currentTimestamp,
-                "sign_off_time" => null,
-                "status" => $status,
-                "notes" => "Sign-in Manually filled by employee",
-                "is_manually_filled" => true,
+                'sign_in_time' => $currentTimestamp,
+                'sign_off_time' => null,
+                'status' => $status,
+                'notes' => 'Sign-in Manually filled by employee',
+                'is_manually_filled' => true,
             ]
         );
+
         return to_route('dashboard.index');
     }
 
-    public function selfSignOffAttendance($request){
+    public function selfSignOffAttendance($request)
+    {
         // Validate first
         $res = $this->validateRequest($request);
         if ($res) {
@@ -171,12 +176,11 @@ class AttendanceServices
 
         if ($attendance) {
             $attendance->update([
-                "sign_off_time" => Carbon::now(),
-                "notes" => "Manually filled by employee",
+                'sign_off_time' => Carbon::now(),
+                'notes' => 'Manually filled by employee',
             ]);
         } else {
             return response()->json(['Error' => 'No Sign in record was found.'], 400);
         }
     }
-
 }

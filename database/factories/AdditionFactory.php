@@ -17,16 +17,16 @@ class AdditionFactory extends Factory
      */
     public function definition(): array
     {
-//        return [
-//            'rewards' => 0,
-//            'incentives' => 0,
-//            'reimbursements' => 0,
-//            'shift_differentials' => 0,
-//            'commissions' => 0,
-//            'due_date' => Carbon::now()->toDateString(),
-//            'status' => false,
-//            "overtime" => 0,
-//        ];
+        //        return [
+        //            'rewards' => 0,
+        //            'incentives' => 0,
+        //            'reimbursements' => 0,
+        //            'shift_differentials' => 0,
+        //            'commissions' => 0,
+        //            'due_date' => Carbon::now()->toDateString(),
+        //            'status' => false,
+        //            "overtime" => 0,
+        //        ];
         return [
             'rewards' => $this->faker->randomFloat(2, 0, 1000),
             'incentives' => $this->faker->randomFloat(2, 0, 1000),
@@ -35,7 +35,7 @@ class AdditionFactory extends Factory
             'commissions' => $this->faker->randomFloat(2, 0, 1000),
             'due_date' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
             'status' => $this->faker->boolean,
-            "overtime" => 0,
+            'overtime' => 0,
         ];
     }
 }

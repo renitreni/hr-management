@@ -12,12 +12,15 @@ use Inertia\Inertia;
 class BranchController extends Controller
 {
     protected BranchServices $branchServices;
+
     protected ValidationServices $validationServices;
+
     public function __construct()
     {
         $this->branchServices = new BranchServices;
         $this->validationServices = new ValidationServices;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,11 +28,11 @@ class BranchController extends Controller
     {
         return Inertia::render('Branch/Branches', [
             'branches' => Branch::when($request->term, function ($query, $term) {
-                $query->where('id', 'LIKE', '%' . $term . '%')
-                    ->orWhere('name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                    ->orWhere('email', 'LIKE', '%' . $term . '%')
-                    ->orWhere('address', 'LIKE', '%' . $term . '%');
+                $query->where('id', 'LIKE', '%'.$term.'%')
+                    ->orWhere('name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$term.'%')
+                    ->orWhere('email', 'LIKE', '%'.$term.'%')
+                    ->orWhere('address', 'LIKE', '%'.$term.'%');
             })
                 ->select(['id', 'name', 'phone', 'email', 'address'])
                 ->withCount('employees')
@@ -44,7 +47,7 @@ class BranchController extends Controller
     public function create()
     {
         return Inertia::render('Branch/BranchCreate', [
-            'employees' => Employee::select(['id', 'name'])->get()
+            'employees' => Employee::select(['id', 'name'])->get(),
         ]);
     }
 
@@ -54,6 +57,7 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $res = $this->validationServices->validateBranchCreationDetails($request);
+
         return $this->branchServices->createBranch($res);
     }
 
@@ -64,11 +68,11 @@ class BranchController extends Controller
     {
         $branch = Branch::withCount('employees')->findOrFail($id);
         $employees = $branch->employees()->where(function ($query) use ($request) {
-            $query->where('employees.normalized_name', 'LIKE', '%' . normalizeArabic($request->term) . '%')
-                ->orWhere('employees.email', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.id', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.phone', 'LIKE', '%' . $request->term . '%')
-                ->orWhere('employees.national_id', 'LIKE', '%' . $request->term . '%');
+            $query->where('employees.normalized_name', 'LIKE', '%'.normalizeArabic($request->term).'%')
+                ->orWhere('employees.email', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.id', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.phone', 'LIKE', '%'.$request->term.'%')
+                ->orWhere('employees.national_id', 'LIKE', '%'.$request->term.'%');
         })
             ->orderBy('employees.id')
             ->paginate(config('constants.data.pagination_count'), ['employees.id', 'employees.name', 'employees.phone', 'employees.email', 'employees.national_id']);
@@ -87,7 +91,7 @@ class BranchController extends Controller
     {
         return Inertia::render('Branch/BranchEdit', [
             'branch' => Branch::with('manager')->withCount('employees')->findOrFail($id),
-            'employees' => Employee::select(['id', 'name'])->get()
+            'employees' => Employee::select(['id', 'name'])->get(),
         ]);
     }
 
@@ -97,6 +101,7 @@ class BranchController extends Controller
     public function update(Request $request, string $id)
     {
         $res = $this->validationServices->validateBranchUpdateDetails($request, $id);
+
         return $this->branchServices->updateBranch($res, $id);
     }
 
@@ -106,6 +111,7 @@ class BranchController extends Controller
     public function destroy(string $id)
     {
         Branch::findOrFail($id)->delete();
+
         return to_route('branches.index');
     }
 }

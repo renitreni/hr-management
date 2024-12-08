@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Shift;
 use Carbon\Carbon;
-use Inertia\Inertia;
 
 class ShiftServices
 {
@@ -19,8 +18,10 @@ class ShiftServices
             'shift_payment_multiplier' => $shift['shift_payment_multiplier'],
             'description' => $shift['description'],
         ]);
+
         return to_route('shifts.index');
     }
+
     public function updateShift($request, $id, $validationServices): \Illuminate\Http\RedirectResponse
     {
         if (is_array($request->start_time) && is_array($request->end_time)) {
@@ -34,6 +35,7 @@ class ShiftServices
         }
         $shift = Shift::findOrFail($id);
         $shift->update($res);
+
         return to_route('shifts.show', ['shift' => $shift->id]);
     }
 
@@ -52,12 +54,11 @@ class ShiftServices
         if ($shift->employees()->count() > 0) {
             foreach ($shift->employees()->get() as $employee) {
                 $curShift = $employee->employeeShifts()->whereNull('end_date')->first();
-                $curShift->update(['shift_id' => Shift::where('id', '!=', $id)->first()->id,]);
+                $curShift->update(['shift_id' => Shift::where('id', '!=', $id)->first()->id]);
             }
         }
         $shift->delete();
+
         return to_route('shifts.index');
     }
-
-
 }

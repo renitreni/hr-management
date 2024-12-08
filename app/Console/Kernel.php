@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // This will use the timezone set at config/app.php
-        $schedule->call(new DailyAttendanceHandle())->daily();    // Every Day at 00:00
+        $schedule->call(new DailyAttendanceHandle)->daily();    // Every Day at 00:00
         $schedule->command('activitylog:clean')->twiceMonthly(1, 16, '00:00'); // Clear Activity Log
-        $schedule->call(new MonthlyPayrollsHandle())->monthlyOn(Globals::first()->payroll_day, '00:00');  // The first day of every month at 00:00
+        $schedule->call(new MonthlyPayrollsHandle)->monthlyOn(Globals::first()->payroll_day, '00:00');  // The first day of every month at 00:00
     }
 
     /**
