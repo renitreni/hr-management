@@ -10,6 +10,7 @@ use App\Services\PayrollServices;
 use App\Services\ValidationServices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PayrollController extends Controller
@@ -34,15 +35,14 @@ class PayrollController extends Controller
         // Setting up filters, if any.
         $dateParam = $request->input('date', '');
         $statusParam = $request->input('status', '');
-
+        $date = '';
+        
         if ($dateParam) {
             $date = Carbon::createFromDate($request->date['year'], $request->date['month'], Carbon::now()->startOfMonth()->format('j'));
             if ($date->isAfter(Carbon::today())) {
                 return response()->json(['Error' => 'Date cannot be in the future. Go back and choose a date before today.'], 400);
             }
             $date = $date->toDateString();
-        } else {
-            $date = '';
         }
 
         // Main Query
@@ -52,7 +52,7 @@ class PayrollController extends Controller
 
         // Limit to logged-in employee if not admin
         if (! isAdmin()) {
-            $payrolls->where('payrolls.employee_id', auth()->id);
+            $payrolls->where('payrolls.employee_id', Auth::id());
         }
 
         // Date Filter
@@ -81,7 +81,7 @@ class PayrollController extends Controller
      */
     public function show(string $id)
     {
-        authenticateIfNotAdmin(auth()->id, $id);
+        authenticateIfNotAdmin(Auth::id(), $id);
         $payroll = Payroll::with('employee')->find($id);
         if ($payroll) {
             return Inertia::render('Payroll/PayrollView', [
