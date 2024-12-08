@@ -31,10 +31,12 @@ class PayrollController extends Controller
     public function index(Request $request)
     {
         $this->validationServices->validatePayrollIndexParams($request);
-
+   
         // Setting up filters, if any.
         $dateParam = $request->input('date', '');
         $statusParam = $request->input('status', '');
+        $column = $request->input('column', '');
+        $direction = $request->input('direction', '');
         $date = '';
         
         if ($dateParam) {
@@ -48,7 +50,9 @@ class PayrollController extends Controller
         // Main Query
         $payrolls = Payroll::leftJoin('employees', 'payrolls.employee_id', '=', 'employees.id')
             ->select('payrolls.id', 'due_date', 'currency', 'total_payable', 'employees.name as employee_name', 'status', 'is_reviewed')
-            ->orderBy('id');
+            ->when($column, function($query) use ($column, $direction){
+                $query->orderBy($column, $direction);
+            });
 
         // Limit to logged-in employee if not admin
         if (! isAdmin()) {
